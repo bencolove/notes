@@ -82,7 +82,7 @@ In the case when no handler is defined in the block, action will be taken based 
 ---
 
 ## 2. DIAGNOSTICS
-[GET DIAGNOSTICS statment][get_diagnostics]
+[GET DIAGNOSTICS statment][get_diagnostics]  
 Diagnostic areas are like error trace stack in Java.
 
 
@@ -145,7 +145,7 @@ GET [CURRENT | STACKED] DIAGNOSTICS CONDITION 1
 ---
 
 ## 3. Signal Statement
-[signal statment][signal_statement]
+[signal statment][signal_statement]  
 SIGNAL is the way to return/throw/raise an error.
 
 1. emit with **SQLSTATE**
@@ -167,6 +167,7 @@ SIGNAL is the way to return/throw/raise an error.
 
 ### Signal Condition Information Items
 The following condition information items can be set when SINGAL or RESIGNAL:
+
 Item Name | Difinition
 ---|---
 CLASS_ORIGIN          | VARCHAR(64)
@@ -182,12 +183,13 @@ CURSOR_NAME           | VARCHAR(64)
 MESSAGE_TEXT          | VARCHAR(128)
 MYSQL_ERRNO           | SMALLINT UNSIGNED
 
+
 SQLSTATE Class Pattern | Meaning
 ---|---
 '00xxx' | success
 '01xxx' | waning
 '02xxx' | not found
-> '02' | exception
+!= '02' | exception
 '40xxx' | user-defined exception
 
 
