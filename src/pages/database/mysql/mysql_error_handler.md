@@ -61,8 +61,9 @@ DECLARE condition_name CONDITION FOR
 Some common codes [mysql error code][mysql_error_code_list]
 error_code | SQLSTATE | meaning | message template
 ---|---|---|---
-1050 | 42S01 | duplicate table | table %s exists
-1051 | 42S02 | table not exists | unknow table %s
+1050 | 42S01 | ER_TABLE_EXITS_ERROR | table %s already exists
+1051 | 42S02 | ER_BAD_TABLE_ERROR | unknow table %s
+1146 | 42S02 | ER_NO_SUCH_TABLE | table %s not exists
 1022 | 23000 | ER_DUP_KEY | duplicate key in table %s
 1048 | 23000 | ER_BAD_NULL_ERROR | Column %s cannot be null
 1052 | 23000 | ER_NON_UNIQ_ERROR | Column %s in %s in ambiguous
