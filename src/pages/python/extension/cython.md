@@ -3,6 +3,55 @@
 2. using Cython to compose extension
 3. install extension with setup tools
 ---
+Benchmark before diveing further:  
+To mimic itemgetter from itertools:  
+```sh
+%%cython --annotate
+
+cpdef list cython_getter(list input_list, int pos):
+    cdef list ret = []
+    for i in range(len(input_list)):
+        ret.append(input_list[i][pos])
+    return ret
+```
+
+```sh
+def comprehension(input_list, pos):
+    return [ row[0] for row in input_list ]
+
+def basic(input_list, pos):
+    ret = []
+    for i in range(len(input_list)):
+        ret.append(input_list[i][pos])
+    return ret
+
+from operator import itemgetter
+def map_get(input_list, getter):
+    return list(map(getter, input_list))
+
+def compreh_get(input_list, getter):
+    return [ getter(row) for row in input_list ]
+```
+```sh
+data = [ [x+y,] for x in range(100) for y in range(100) ]
+
+%timeit basic(data,0)
+
+getter = itemgetter(0)
+%timeit comprehension(data,getter)
+%timeit map_get(data,getter)
+
+%timeit cython_getter(data, 0)
+```
+output:  
+```sh
+711 µs ± 477 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+283 µs ± 4.69 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+343 µs ± 315 ns per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+66.3 µs ± 310 ns per loop (mean ± std. dev. of 7 runs, 10000 loops each)
+```
+
+---
 ## Good old C/C++ for extension
 [extension with C/C++][extending_python]  
 
