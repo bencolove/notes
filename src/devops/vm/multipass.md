@@ -37,6 +37,11 @@ Often used ones:
 ---
 ## Info of VMs
 `$ multipass info <vm-name>`  
+
+---
+## Quick REPL
+`$ multipass exec <vm-name> <command>`
+
 ---
 
 ## Shell in VMs
