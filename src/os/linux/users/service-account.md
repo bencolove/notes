@@ -44,7 +44,16 @@ addgroup --system [--gid ID] GROUP
 # add existing user to existing group
 adduser USER GROUP
    Add an existing user to an existing group
-``` 
+```
+
+```bash
+sudo useradd -r -m -U -d /opt/tomcat -s /bin/false tomcat
+```
+* -r --system: system account
+* -m --create-home: create user's home directory
+* -U --user-group: create a group with same user name
+* -d --home-dir HOME_DIR: reate HOME_DIR and set as home directory
+* -s --shell SHELL: set login shell
 
 ## Test `binary` and `script` Executables
 Binary file starting with magic number `23 21` (`#!`) is script while `7F 45 4C 46` is binary executable.
