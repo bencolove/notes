@@ -5,6 +5,7 @@
 * `wsl`
 * Location of distros
 * [Resize distros][resize-distro]
+* [manage][manage-wsl2]
 
 ---
 
@@ -60,4 +61,40 @@ CanonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc
 PS> explorer.exe %LOCALAPPDATA%\Packages\<PackageFamilyName>\LocalState\<disk>.vhdx
 ```
 
+
+## Manage WSL 2 VMs
+>Global options of WSL2 for all VM
+
+[Per-vm-options][config-per-vm]
+
+--_`%USERPROFILE%/.wslconfig`_--
+```ini
+[wsl2]
+kernel=C:\\temp\\myCustomKernel
+memory=4GB # Limits VM memory in WSL 2 to 4 GB
+processors=2 # Makes the WSL 2 VM use two virtual processors
+```
+
+>Options Per VM  
+
+[Global-wsl2-options][config-global]
+
+--_`/etc/wsl.conf`_--
+```ini
+[user]
+default=<default-user>
+
+[automount]
+options=metadata,uid=1000,gid=1000,umask=133,dmask=022
+
+[network]
+# for changing /etc/hostname and /etc/hosts
+generateHosts = false
+```
+
+About `umask` refer to [how-to-umask](../../os/linux/files/umask.md)
+
+
 [resize-distro]: https://docs.microsoft.com/en-us/windows/wsl/compare-versions#expanding-the-size-of-your-wsl-2-virtual-hardware-disk
+[config-per-vm]: https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-per-distro-launch-settings-with-wslconf
+[config-global]: https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig 
