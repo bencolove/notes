@@ -1,5 +1,18 @@
 # Connect from within a Container to Docker Host
 
+>Use `host` network  
+`docker run --network=host ...` the container will share the network stack with host
+
+```sh
+[host:~] $ ip a show eth0
+...
+
+[host:~] $ docker run -it --rm --network=host alpine ip a show eth0
+...
+
+# they should look the same
+```
+
 >Windows or MAC docker-desktop  
 `host.docker.internal` can be used to specify the host's ip address
 
