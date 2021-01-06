@@ -1,6 +1,28 @@
 # Explain Scheduler of Goroutine
+Three components closely related:
+* scheduler
+* netpoller
+* sysmon
 
->The `GMP` story  
+---
+## Conslusion First
+When the _scheduler_ will be kicked off to suspend current goro and schedule another:
+1. application.main -> `runtime.mstart` -> `schedule` recursively
+1. runtime suspend -> `gopark`
+1. blocking syscall -> `exitsyscall`
+1. cooperative      -> `Gosched()`
+1. preemptive       -> `sysmon` -> `retake` 
+
+>Two points of time different than that in Python:  
+1. blocking system call like I/O
+1. long-runing task
+
+For blocking system call like read/write with files, runtime will suspend with `gopark` and then trigger `schedule`.
+
+For long-running task like CPU-bound, `sysmon` will notice a more than 10ms occupition on CPU and then `retak`, `preemptone` and finally `schedule`.
+
+---
+## The `GMP` story  
 * G goroutine  
     who's job is defined by go `func` and holds context like stack frames  
 * M os-thread
@@ -10,7 +32,6 @@
 
 
 ---
-
 ## Tools
 * `trace`
 * `debug`
