@@ -1,12 +1,15 @@
 # scheduler
+[GMP][GMP-liudanbing]  
+[runtime][runtime-scheduler]
 
 The:
 Acronym | Usage
 ---|---
-M (thread) | OS thread, managed by OS 
-G (goroutine) | task
-P (processor) | scheduler on current thread for goros
+`M` (thread) | OS thread, runing infinite loop of G 
+`G` (goroutine) | go-routine task
+`P` (processor) | structure of (MAXPROCS) holding local `runq` and associate one `P`
 
+---
 ## `G`
 _--runtime.g--_
 ```go
@@ -27,6 +30,8 @@ type g struct {
     sched   gobuf   // status
     atmoicstatus uint32
     goid         int64
+
+    startpc    uintptr // pc of goroutine function line:464
     ...
 }
 
@@ -55,6 +60,7 @@ OS thread limited by:
 * maximum 10000
 * most blocked/waiting
 * GOMAXPROCS active ones
+* `spinning` means `M-P-G0` with empty local `runq`
 * GOMAXPROCS default to num of cores
 
 _--runtime.m--_
@@ -72,6 +78,7 @@ type m struct {
 ```
 The `g0` goro is a special one the first gorotine when creating the `M` and duty for memory allocation, construct the `M` and CGO.
 
+---
 ## `P`
 The coordinator between `M` and `G`. Scheduler/manager of goros on M.
 
@@ -97,6 +104,8 @@ _Prunning | executing | o
 _Psyscall | m is blocked | o?
 _Pgcstop | blocked by gc | o
 _Pdead | not available | x
+
+---
 
 ## Flow of scheduler
 1. init
@@ -184,3 +193,19 @@ Flow:
 
 ### Preempt (by signal SIGUSR)
 
+
+## Runtime History
+Version | Date | What's New | GC STW time(collected)
+---|---|---|---
+**`1.0`** | 2012/3 | GM, GC STW | hundred ms to s
+**`1.1`** | 2013/5 | G-P-M | similar
+1.2 | 2013/12 | collaborate preempt | similar
+1.3 | 2014/6 | GC mark STW, +sync.Pool | hundred ms
+1.4 | 2014/12 | self-boot GO | similar
+**`1.5`** | GC 3-color mark, +go tool trace | 10ms
+1.6 |
+1.7 |
+**`1.8`** | 2017/2 | hybrid write barrier | sub ms
+
+[GMP-liudanbing]: https://learnku.com/articles/41728
+[runtime-scheduler]: https://github.com/golang/go/blob/master/src/runtime/runtime2.go
