@@ -1,6 +1,13 @@
 # Scaffold with `Ionic`
 [How-to build capacitor plugin][custom-capacitor]
 
+1. scaffold
+1. workflow
+
+<br>
+
+---
+
 ## 1. Scaffold Plugin Project
 ```
 npm -g @capacitor/cli
@@ -17,6 +24,7 @@ npm run build
 ```typescript
 declare module "@capacitor/core" {
   interface PluginRegistry {
+      // ContactsPlugin is the name that should be imported
     ContactsPlugin: ContactsPluginPlugin;
   }
 }
@@ -128,8 +136,44 @@ await MyPlugin.getContacts('filter').results
 
 ```
 
+>5. Build ionic app
+
+```sh
+// plugin code changed
+plugin_dir> npm run build
+
+// ionic app must be rebuilt after changes
+ionic_dir> ionic build
+// push updates to android studio
+ionic_dir> npx cap sync
+```
+
+<br>
 
 ---
+
+## Create Plugin
+```shell
+$ npm -g @capacitor/cli
+$ npx @capacitor/cli plugin:generate
+# folder created
+$ cd pluginfolder
+$ npm run build
+```
+
+## Create Ionic App
+```sh
+$ npm i -g @ionic/cli
+ionic start myapp blank --type=angular --capacitor 
+$ cd myapp
+# use local relative path    
+$ npm i path/to/plugin
+
+# build app
+$ ionic build
+# add native platforms
+$ npx cap add android
+```
 
 ## Workflow of capacitor
 1. Open ionic app folder  
@@ -139,12 +183,23 @@ await MyPlugin.getContacts('filter').results
 `npx cap sync`
 1. See udpates from Android Studio
 
-## Dependencies in Plugin
+<br>
+
+## Additional Dependencies in Plugin
 By looking at `plugin/android/build.gradle`
 ```gradle
 dependencies {
     // every local jar in plugin/android/libs will be included
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // additional dependencies
+    // somehow when plugin needs Activiy, it is required
+	implementation "androidx.appcompat:appcompat:1.1.0"
+	
+	// kotlin koroutine
+	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
+
     // add maven jar slf4j android
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.30'
