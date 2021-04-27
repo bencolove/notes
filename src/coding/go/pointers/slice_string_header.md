@@ -86,4 +86,27 @@ How to do the conversion from `struct` to `[]byte`:
 1. `encoding/gob`
 1. `encoding/json`
 1. `encoding/binary`
-1. *`black magic`* `unsafe.Pointer`
+1. *black magic* `unsafe.Pointer`
+
+```go
+type MyStruct struct {
+    A int
+    B int
+}
+
+var data = MyStruct{
+    A: 1, B: 2,
+}
+
+var sizeMyStruct = int(unsafe.Sizeof(data))
+
+var x reflect.SliceHeader
+x.Len = sizeMyStruct
+x.Cap = x.Len
+x.Data = uintptr(unsafe.Pointer(&data))
+// struct to []byte
+var backup = *(*[]byte)(unsafe.Pointer(&x))
+
+// []byte to struct
+unsafe.Pointer(&backup)
+```
