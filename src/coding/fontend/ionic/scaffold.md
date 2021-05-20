@@ -1,8 +1,11 @@
 # Scaffold with `Ionic`
 [How-to build capacitor plugin][custom-capacitor]
+[[Make sure typescript comfiled against es5 not es2015][ts-config-es5]]
+[access localhost from Android emulator [`10.0.2.2`]]
 
 1. scaffold
 1. workflow
+    * modify typescript if using angular `tsconfig.json[14]: "target": "es5"`
 
 <br>
 
@@ -17,10 +20,10 @@ cd pluginfolder
 npm run build
 ```
 
-## 2. Add Implementions (Web/Android/Ios)
+## 2. Add Plugin Implementions (Web/Android/Ios)
 > 2.1 Typescript Definitions
 
---_`src/definitions.ts`_--
+--_`plugin/src/definitions.ts`_--
 ```typescript
 declare module "@capacitor/core" {
   interface PluginRegistry {
@@ -39,7 +42,7 @@ export interface MyPluginInterface {
 
 >2.2 Web Implementions  
 
---_`src/web.ts`_--
+--_`plugin/src/web.ts`_--
 ```typescript
 export class MyPlugin extends WebPlugin implements MyPluginInterface {
     // ...
@@ -62,7 +65,7 @@ export class MyPlugin extends WebPlugin implements MyPluginInterface {
 
 >2.4 Android Implementations
 
-`Android Studio` open the folder `android` to locate your class to implement `MyPlugin.java`
+`Android Studio` open the plugin folder `android` to locate your class to implement `MyPlugin.java`
 ```java
 @NativePlugin(requestCodes)
 class MyPlugin extends Plugin {
@@ -152,30 +155,46 @@ ionic_dir> npx cap sync
 
 ---
 
-## Create Plugin
+## 1.Create Plugin
 ```shell
-$ npm -g @capacitor/cli
+$ npm i -g @capacitor/cli
 $ npx @capacitor/cli plugin:generate
+ ... Q&A
 # folder created
 $ cd pluginfolder
 $ npm run build
 ```
+Folder layout:
+* android - native side
+* dist - build output of web
+* ios - native side
+* src - web implementation
 
-## Create Ionic App
+## 2.Create Ionic App if not Existed
 ```sh
 $ npm i -g @ionic/cli
-ionic start myapp blank --type=angular --capacitor 
+$ ionic start myapp blank --type=angular --capacitor 
+$ ionic version
+```
+
+## 3.Add Plugin into Ionic App
+```shell
 $ cd myapp
 # use local relative path    
 $ npm i path/to/plugin
+```
 
+## 4.Add native platform
+```shell
 # build app
 $ ionic build
 # add native platforms
 $ npx cap add android
+# or
+$ ionic capacitor add android
 ```
 
-## Workflow of capacitor
+## 5.Workflow of capacitor
 1. Open ionic app folder  
 `npx cap open android`
 1. Make changes to plugin code
@@ -208,3 +227,4 @@ dependencies {
 Note: remember to `npm run build` your plugin before proceed
 
 [custom-capacitor]: https://devdactic.com/build-capacitor-plugin/
+[ts-config-es5]: https://angular.io/guide/typescript-configuration
