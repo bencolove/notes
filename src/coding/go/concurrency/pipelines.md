@@ -52,8 +52,8 @@ func process(in <-chan int) <-chan int {
 
 
 ## Fan-in Merge
-* `Fan-out`: distribute
-* `Fan-in`: merge
+* `Fan-out`: distribute `1` goro for each each upstream channel
+* `Fan-in`: merge into `1` wait goro
 
 ```go
 func merge(cs ...<--chan int) <-chan int {
@@ -77,7 +77,7 @@ func merge(cs ...<--chan int) <-chan int {
 
     // collect from Goro
     for _, c := range cs {
-        go output(c)
+        go collect(c)
     }
 
     // wait in another Goro
@@ -88,4 +88,114 @@ func merge(cs ...<--chan int) <-chan int {
 
     return out
 }
+```
+
+## Stop Short and Explicit Cancellation
+By `context.Context` or `chan struct{}`  
+
+```go
+
+func producer(ctx context.Context, nums ...int) <-chan int {
+    // downstream channel
+    out := make(chan int)
+
+    go func() {
+        // must close after use or cancelled
+        defer close(out)
+        for _, n := range nums {
+            select {
+                case out <- n:
+                // check whether cancelled
+                case <- ctx.Done(): return
+            }
+        }
+    } ()
+
+    return out
+}
+
+func process(ctx context.Context, in <-chan int) <-chan int {
+    // downstream channel
+    out := make(chan int)
+
+    go func() {
+        // must close after use or cancelled
+        defer close(out)
+        for n := range in {
+            select {
+                case out <- n*n:
+                // check whether cancelled
+                case <- ctx.Done(): return
+            }
+        }
+    } ()
+
+    return out
+}
+
+func merge(ctx context.Context, cs ...<-chan int) <-chan int {
+    // cond lock
+    var wg sync.WaitGroup
+
+    // downstream channel
+    out := make(chan int)
+
+    collect := func(c <-chan int) {
+        // signal done when finish
+        defer wg.Done()
+
+        for n := range c {
+            select {
+                case out <- n:
+                // check whether cancelled
+                case <- ctx.Done(): return
+            }
+        }
+    }
+
+    // init cond lock
+    wg.Add(len(cs))
+
+    for _, c := range cs {
+        // distribute over downstream
+        go collect(c)
+    }
+
+    // goro to wait on cond lock and close downstream channel
+    go func() {
+        wg.Wait()
+        close(out)
+    } ()
+
+    return out
+}
+```
+
+_`main.go`_
+```go
+func main() {
+
+    // setup context
+    ctx, cancelFn := context.WithCancel(context.Background())
+    time.AfterFunc(2 * time.Second, func() {
+        fmt.Println("2 seconds up, cancel it")
+        // cancel after 2 seconds
+        cancelFn()
+    })
+    // above equals to
+    // ctx, cancelFn := context.WithTimeout(context.Background(), 2 * time.Second)
+
+    in := producer(ctx, 1,2,3,4,5,7)
+    c1 := process(ctx, in)
+    c2 := process(ctx, in)
+
+    out := merge(ctx, c1, c2)
+
+    for n := range out {
+        fmt.Printf("collect %d\n", n)
+    }
+
+    fmt.Println("all done")
+}
+
 ```
