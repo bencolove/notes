@@ -11,6 +11,10 @@
 Boolean_Series = df.sera == va
 * `df[sera == va]` => pd.DataFrame
 
+> select * from reviews where points=max(points)
+
+> reviews.loc[reviews.points.idxmax()]
+
 ---
 
 ## `loc` or `iloc`
