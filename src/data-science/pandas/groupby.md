@@ -1,7 +1,9 @@
 # Groupby
 
-> DataFrame.groupby(column_or_columns)  
-This results in a `groupby` instance
+> DataFrame.groupby(
+    by=column_or_columns,
+    level=MultiIndex_from_0)  
+This results in a `groupby` instance with column_or_columns as its single index or MultiIndex against a slice of DataFrame
 
 `DataFrame.groupby([str_columns])`  
 Slice the df based on the columns.
@@ -11,8 +13,8 @@ Slice the df based on the columns.
 >select min(price)
 GROUP BY points  
 
->df.groupby('points').price.min()
-
+>df.groupby('points').price.min()  
+=> pd.Series
 ---
 
 > select count(1) from reviews  
@@ -20,8 +22,15 @@ GROUP BY tweets
 
 > reviews.groupby('tweets').size() or  
 reviews.groupby('tweents').tweets.count()  
-
+=> pd.Series
 --- 
+
+> select max(points) from reviews  
+GROUP BY price
+ORDER BY price AESC
+
+> reviews.groupby('price')['potins'].max().sort_index()  
+=> pd.Series
 
 
 
