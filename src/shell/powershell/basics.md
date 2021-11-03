@@ -49,5 +49,5 @@ JSON | ConvertTo-JSON <br> -InputObject _object_or_piped_ <br> -Compress <br> -A
 * Out
 * New
 
-## interpolation
+## string interpolation
 `"""{0}"": {1}" -f "a", 2`
