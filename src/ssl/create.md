@@ -3,6 +3,7 @@
 1. create csr
 1. sign csr (self-sign cert)
 1. bundle chain
+1. development-purpose self-signed root cert
 ---
 
 ## 1. Create Key Pair
@@ -70,11 +71,11 @@ or
 
 ---
 
-## the *config file*
+## the *config file* V3
 ```ini
 [req]
 distinguished_name = req_distinguished_name
-req_extensions = v3_req
+x509_extensions = v3_req
 prompt = no
 
 [req_distinguished_name]
@@ -93,4 +94,14 @@ subjectAltName = @alt_names
 
 [alt_names]
 IP.1 = 192.168.1.1
+DNS.1 = localhost
 ```
+
+## Create self-signed certificate for development
+With above `san-ip.cnf` config file, we do
+`$ openssl req -x509 -nodes -days 30 -newkey rsa:2048 -keyout private.key -out CA.crt -config san-ip.cnf`
+With create the `private.key` private key and `CA.crt` the public self-signed CA root certificate which can also used to sign another imtermediate or site certificates.
+
+To view the content
+`$ openssl x509 -in CA.crt -text -noout`
+locate indicator `Version : 3` and `X509v3 Subject Alternative Names:`

@@ -1,6 +1,11 @@
 # matplotlib.pyplot
+* inline mode
 * global config
 * subplots
+
+## Display Mode
+- `%matplotlib notebook`: interactive mode
+- `%matplotlib inline`: static mode
 
 ## Global config
 ```python
@@ -49,4 +54,15 @@ ax1.plt...
 ax2.set_title...
 # specify which axis to plot onto
 sns.barplot(..., ax=ax2)
+```
+
+## Save Image
+```python
+fig = plt.figure()
+
+fig.savefig(file_path)
+
+from IPython.display import Image
+Image(file_path) # to read it back
+
 ```

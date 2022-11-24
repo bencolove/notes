@@ -5,6 +5,8 @@
 # Install from ZIP
 ```shell
 $ wget -s -o https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+# or
+$ curl -s -O url
 $ cd /path/to/install
 $ unzip /path/to/ngrok.zip
 
